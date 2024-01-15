@@ -15,7 +15,7 @@ Basic premisses:
 a good design
 3. uses TOML
 
-see [tests/sample_project/Jargo.toml](blob/main/tests/sample_project/Jargo.toml) to get an impression of what that looks like.
+see [tests/sample_project/Jargo.toml](https://github.com/shautvast/jargo/blob/main/tests/sample_project/Jargo.toml) to get an impression of what that looks like.
 
 Goals:
 1. Simple management of (test) dependencies, using existing maven repositories
