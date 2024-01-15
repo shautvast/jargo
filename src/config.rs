@@ -9,11 +9,11 @@ pub struct Config {
 
 pub static CONFIG: OnceLock<Config> = OnceLock::new();
 
-pub fn get_config() -> &'static Config {
+pub fn config() -> &'static Config {
     CONFIG.get_or_init(|| {
         let user_home = home::home_dir().unwrap();
         Config {
-            cache_location: format!("{}/jargo/repo", user_home.to_str().unwrap()).into(),
+            cache_location: format!("{}/jargo/repo", user_home.to_str().unwrap()).into(),//TODO make '.jargo'
             user_home,
             maven_central: "https://repo.maven.apache.org/maven2".into()
         }

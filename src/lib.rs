@@ -1,4 +1,5 @@
 use std::fs;
+use std::path::Path;
 
 use anyhow::{anyhow, Error};
 use toml::{Table, Value};
@@ -6,6 +7,7 @@ use toml::{Table, Value};
 pub mod pom;
 mod config;
 pub mod deploader;
+pub mod compile;
 
 #[derive(Debug)]
 pub struct Project {
@@ -14,6 +16,7 @@ pub struct Project {
     pub version: String,
     pub dependencies: Vec<Artifact>,
     pub test_dependencies: Vec<Artifact>,
+    pub project_root: String,
 }
 
 #[derive(Debug)]
@@ -51,19 +54,23 @@ impl Artifact {
 }
 
 pub fn load_project(jargo_file: Option<&str>) -> Result<Project, Error> {
-    let project_table = fs::read_to_string(jargo_file.unwrap_or("./Jargo.toml"))?.parse::<Table>()?;
+    let jargo = Path::new(jargo_file.unwrap_or("./Jargo.toml"));
+
+    let project_table = fs::read_to_string(jargo)?.parse::<Table>()?;
     let package = project_table.get("package").expect("package info missing");
 
     let dependencies = get_dependencies(project_table.get("dependencies"))?;
 
     let test_dependencies = get_dependencies(project_table.get("test-dependencies"))?;
 
+
     Ok(Project {
-        group: package.get("group").unwrap().to_string(),
-        name: package.get("name").unwrap().to_string(),
-        version: package.get("version").unwrap().to_string(),
+        group: strip_first_last(package.get("group").unwrap().to_string()),
+        name: strip_first_last(package.get("name").unwrap().to_string()),
+        version: strip_first_last(package.get("version").unwrap().to_string()),
         dependencies,
         test_dependencies,
+        project_root: jargo.parent().map(Path::to_str).unwrap().expect(&format!("projectroot {:?} not usable", jargo)).into(),
     })
 }
 
@@ -80,4 +87,8 @@ fn get_dependencies(table: Option<&Value>) -> Result<Vec<Artifact>, Error> {
         }
     }
     Ok(dependencies)
+}
+
+fn strip_first_last(text: String) -> String{
+    text[1..text.len()-1].into()
 }

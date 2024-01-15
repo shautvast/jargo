@@ -1,10 +1,8 @@
 **Jargo**
 
-Exploring the need/possibility to move from maven/gradle to cargo.
+An experimental build tool for Java taking inspiration from Cargo.
 
-That is, build tool for java taking inspiration from Cargo
-
-And it's called Jargo. I do not wish to put a J in front of anything, as is the java tradition, 
+And it's called *Jargo*. I do not wish to put a J in front of anything, as is the java tradition, 
 but 'jargo' actually sounds kinda nice and it conveys pretty much what it is. 
 
 It is NOT a new maven (not yet at least). That's the reason it's not called 'raven.'
@@ -12,8 +10,8 @@ It is NOT a new maven (not yet at least). That's the reason it's not called 'rav
 Basic premisses:
 1. written in Rust
 2. does NOT copy anything from the maven philosophy (phases, goals etc). Instead find out on the go what would be 
-a good design
-3. uses TOML
+a good design. _That said, some things are just good to keep using, such as the default project structure._
+3. configured in TOML. ie. no XML, **yay!**, AND no Turing-completeness (groovy/kotlin in gradle), **yay2!!**
 
 see [tests/sample_project/Jargo.toml](https://github.com/shautvast/jargo/blob/main/tests/sample_project/Jargo.toml) to get an impression of what that looks like.
 
@@ -38,7 +36,8 @@ _Every tool is currently being rewritten in rust._ And for good reason!
 
 2. Why not create a drop-in replacement for maven written in rust?
 
-_While that would make migration a no-brainer, it seems too ambitious based on what I've seen of the maven 
-codebase_
+_While that would (in theory) make migration a no-brainer, it seems too ambitious based on what I've seen of the maven 
+codebase. Other than that you will most likely run into onforeseen issues while migrating this way, because this or 
+that is subtly different here and there. Better avoid the promise of easy migration altogether._
 
 
