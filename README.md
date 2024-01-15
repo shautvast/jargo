@@ -7,7 +7,7 @@ That is, build tool for java taking inspiration from Cargo
 And it's called Jargo. I do not wish to put a J in front of anything, as is the java tradition, 
 but 'jargo' actually sounds kinda nice and it conveys pretty much what it is. 
 
-It is NOT a new maven (not yet at least).
+It is NOT a new maven (not yet at least). That's the reason it's not called 'raven.'
 
 Basic premisses:
 1. written in Rust
@@ -15,7 +15,7 @@ Basic premisses:
 a good design
 3. uses TOML
 
-see [tests/sample_project/Jargo.toml]() to get an impression of what that looks like.
+see [tests/sample_project/Jargo.toml](blob/main/tests/sample_project/Jargo.toml) to get an impression of what that looks like.
 
 Goals:
 1. Simple management of (test) dependencies, using existing maven repositories
