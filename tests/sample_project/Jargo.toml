@@ -1,0 +1,10 @@
+[package]
+group = "nl.sander"
+name = "sample_project"
+version = "0.1-SNAPSHOT"
+
+[dependencies]
+
+[test-dependencies]
+"junit:junit" = "4.8.2"
+"org.mockito:mockito-core" = "1.9.5"
