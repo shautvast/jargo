@@ -2,11 +2,11 @@ use std::fs;
 use std::path::{Path, PathBuf};
 use std::process::Command;
 
+use crate::compile::PathNode::*;
 use anyhow::Error;
 use colored::Colorize;
-use crate::compile::PathNode::*;
 
-use crate::Project;
+use crate::project::Project;
 
 const SOURCES: &str = "src/main/java";
 const TESTSOURCES: &str = "src/test/java";
@@ -15,7 +15,6 @@ const TESTRESOURCES: &str = "src/main/java";
 
 const TARGET_MAIN: &str = "target/classes";
 const TARGET_TEST: &str = "target/test-classes";
-
 
 /// internal view of the src filesystem
 #[derive(Debug)]
@@ -26,21 +25,25 @@ enum PathNode {
 
 /// runs the compile stage
 pub fn run(project: &Project) -> Result<(), Error> {
-    println!("{} {}.{}-{}", "Compiling".green(), project.group, project.name, project.version);
+    println!(
+        "{} {}.{}-{}",
+        "Compiling".green(),
+        project.group,
+        project.name,
+        project.version
+    );
 
     let root = PathBuf::from(&project.project_root).join(SOURCES);
 
     let mut src_tree = DirNode(root.clone(), Vec::new(), Vec::new());
     determine_src_tree(root, &mut src_tree)?;
-    println!("{:?}", src_tree);
-
-    compile_sourcedir(project, &mut src_tree)?;
+    compile_source_dir(project, &mut src_tree)?;
 
     Ok(())
 }
 
 /// walks the source tree and compiles any java files
-fn compile_sourcedir(project: &Project, src_tree: &mut PathNode) -> Result<(), Error> {
+fn compile_source_dir(project: &Project, src_tree: &mut PathNode) -> Result<(), Error> {
     if let DirNode(dir_name, subdirs, contents) = src_tree {
         if !contents.is_empty() {
             let mut javac = if cfg!(target_os = "windows") {
@@ -78,7 +81,7 @@ fn compile_sourcedir(project: &Project, src_tree: &mut PathNode) -> Result<(), E
             println!("{}", String::from_utf8(output.stdout)?);
         }
         for subdir in subdirs {
-            compile_sourcedir(project, subdir)?;
+            compile_source_dir(project, subdir)?;
         }
     }
     Ok(())

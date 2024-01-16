@@ -3,7 +3,12 @@ group = "nl.sander"
 name = "sample_project"
 version = "0.1-SNAPSHOT"
 
+[repositories]
+spring-milestones = {url = "https://repo.spring.io/milestone"}
+spring-snapshots = {url = "https://repo.spring.io/snapshot"}
+
 [dependencies]
+"org.springframework.boot:spring-boot-starter-web" = "3.0.0-SNAPSHOT"
 
 [test-dependencies]
 "junit:junit" = "4.8.2"

@@ -1,4 +1,5 @@
-use strong_xml::{XmlRead};
+use strong_xml::XmlRead;
+use crate::maven::metadata::Versioning;
 
 /// The Maven variant to parse poms
 /// These structs is directly modelled after the XML because that is what strong-xml plugin requires
@@ -7,6 +8,8 @@ use strong_xml::{XmlRead};
 pub struct Pom {
     #[xml(child = "modelVersion")]
     pub model_version: ModelVersion,
+    #[xml(child = "parent")]
+    pub parent: Parent,
     #[xml(child = "groupId")]
     pub group_id: GroupId,
     #[xml(child = "artifactId")]
@@ -16,7 +19,7 @@ pub struct Pom {
     #[xml(child = "name")]
     pub name: Name,
     #[xml(child = "packaging")]
-    pub packaging: Packaging,
+    pub packaging: Option<Packaging>,
     #[xml(child = "url")]
     pub url: Url,
     #[xml(child = "description")]
@@ -28,7 +31,7 @@ pub struct Pom {
     #[xml(child = "developers")]
     pub developers: Developers,
     #[xml(child = "dependencies")]
-    pub dependencies: Dependencies,
+    pub dependencies: Option<Dependencies>,
 }
 
 #[derive(XmlRead, PartialEq, Debug)]
@@ -91,7 +94,7 @@ pub struct Url {
 #[xml(tag = "description")]
 pub struct Description {
     #[xml(text)]
-    value:String,
+    value: String,
 }
 
 #[derive(XmlRead, PartialEq, Debug)]
@@ -120,6 +123,17 @@ pub struct License {
 }
 
 #[derive(XmlRead, PartialEq, Debug)]
+#[xml(tag = "parent")]
+pub struct Parent {
+    #[xml(child = "groupId")]
+    group_id: GroupId,
+    #[xml(child = "artifactId")]
+    artifact_id: ArtifactId,
+    #[xml(child = "version")]
+    version: Version,
+}
+
+#[derive(XmlRead, PartialEq, Debug)]
 #[xml(tag = "scm")]
 pub struct Scm {
     #[xml(child = "url")]
@@ -145,7 +159,7 @@ struct Developer {
 #[derive(XmlRead, PartialEq, Debug)]
 #[xml(tag = "dependencies")]
 pub struct Dependencies {
-    #[xml(child = "developer")]
+    #[xml(child = "dependency")]
     pub value: Vec<Dependency>,
 }
 
@@ -157,14 +171,14 @@ pub struct Dependency {
     #[xml(child = "artifactId")]
     pub artifact_id: ArtifactId,
     #[xml(child = "version")]
-    pub version: Version,
+    pub version: Option<Version>,
 }
 
 #[cfg(test)]
 mod test {
     use strong_xml::XmlRead;
 
-    use crate::pom::model::Pom;
+    use crate::maven::pom::Pom;
 
     #[test]
     fn parse_should_not_fail() {
