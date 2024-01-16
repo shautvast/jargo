@@ -17,12 +17,14 @@ const TARGET_MAIN: &str = "target/classes";
 const TARGET_TEST: &str = "target/test-classes";
 
 
+/// internal view of the src filesystem
 #[derive(Debug)]
 enum PathNode {
     DirNode(PathBuf, Vec<PathNode>, Vec<PathNode>),
     FileNode(PathBuf),
 }
 
+/// runs the compile stage
 pub fn run(project: &Project) -> Result<(), Error> {
     println!("{} {}.{}-{}", "Compiling".green(), project.group, project.name, project.version);
 
@@ -37,6 +39,7 @@ pub fn run(project: &Project) -> Result<(), Error> {
     Ok(())
 }
 
+/// walks the source tree and compiles any java files
 fn compile_sourcedir(project: &Project, src_tree: &mut PathNode) -> Result<(), Error> {
     if let DirNode(dir_name, subdirs, contents) = src_tree {
         if !contents.is_empty() {
@@ -81,6 +84,7 @@ fn compile_sourcedir(project: &Project, src_tree: &mut PathNode) -> Result<(), E
     Ok(())
 }
 
+/// the source tree on disk is first read into memory
 fn determine_src_tree(parent: PathBuf, parent_node: &mut PathNode) -> Result<(), Error> {
     let paths = fs::read_dir(&parent)?;
 

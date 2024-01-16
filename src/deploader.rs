@@ -14,6 +14,17 @@ use crate::config::config;
 use crate::pom::model::Pom;
 use colored::Colorize;
 
+/// Loads a list of artifacts from remote repo or local cache
+///
+/// 1. check if calculated location (directory) exists on local disk
+/// 2. if not create it
+/// 3. checks if jar exists on local disk
+/// 4. if not downloads it from a repo (now mavencentral only)
+/// 5. downloads/reads from disk the SHA1 (hex) file and compares it with the calculated one for the jar (this is done always)
+/// 6. checks if pom exists on local disk
+/// 7. if not downloads it from a repo (now mavencentral only)
+/// 8. verifies the SHA1 as for the jar
+/// 9. extracts the transitive dependencies from the pom and recurses to (1) for the list of dependencies
 pub fn load_artifacts(artifacts: &[Artifact]) -> Result<(), Error> {
     for art in artifacts {
         load_artifact(art)?;
@@ -21,7 +32,7 @@ pub fn load_artifacts(artifacts: &[Artifact]) -> Result<(), Error> {
     Ok(())
 }
 
-pub fn load_artifact(art: &Artifact) -> Result<(), Error> {
+fn load_artifact(art: &Artifact) -> Result<(), Error> {
     let artifact_path = format!("{}/{}/{}", art.group.replace(".", "/"), art.name, art.version);
 
     // check/create artifact directory

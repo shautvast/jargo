@@ -1,6 +1,7 @@
 use strong_xml::{XmlRead};
 
 /// The Maven variant to parse poms
+/// These structs is directly modelled after the XML because that is what strong-xml plugin requires
 #[derive(XmlRead, PartialEq, Debug)]
 #[xml(tag = "project")]
 pub struct Pom {

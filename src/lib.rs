@@ -9,6 +9,7 @@ mod config;
 pub mod deploader;
 pub mod compile;
 
+/// Top struct for jargo project data
 #[derive(Debug)]
 pub struct Project {
     pub group: String,
@@ -19,6 +20,7 @@ pub struct Project {
     pub project_root: String,
 }
 
+/// The identifier for any released bundle (jar, war etc) like in maven
 #[derive(Debug)]
 pub struct Artifact {
     pub group: String,
@@ -26,6 +28,7 @@ pub struct Artifact {
     pub version: String,
 }
 
+/// Convert from XML view
 impl From<pom::model::Dependency> for Artifact {
     fn from(value: pom::model::Dependency) -> Self {
         Artifact {
@@ -37,6 +40,8 @@ impl From<pom::model::Dependency> for Artifact {
 }
 
 impl Artifact {
+
+    /// Convert from TOML view
     pub fn from_table_entry(name_group: &str, version: String) -> Result<Self, Error>{
         let name_group_split: Vec<&str> = name_group.split(":").collect();
         if 2 != name_group_split.len(){
@@ -53,6 +58,7 @@ impl Artifact {
     }
 }
 
+/// loads the project from the TOML file
 pub fn load_project(jargo_file: Option<&str>) -> Result<Project, Error> {
     let jargo = Path::new(jargo_file.unwrap_or("./Jargo.toml"));
 
@@ -74,6 +80,7 @@ pub fn load_project(jargo_file: Option<&str>) -> Result<Project, Error> {
     })
 }
 
+/// convert dependencies from the TOML view
 fn get_dependencies(table: Option<&Value>) -> Result<Vec<Artifact>, Error> {
     let mut dependencies = vec![];
     if let Some(table) = table {
@@ -89,6 +96,7 @@ fn get_dependencies(table: Option<&Value>) -> Result<Vec<Artifact>, Error> {
     Ok(dependencies)
 }
 
+/// Because strings in the toml are surrounded by double quotes
 fn strip_first_last(text: String) -> String{
     text[1..text.len()-1].into()
 }
