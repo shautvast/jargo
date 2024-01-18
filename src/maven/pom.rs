@@ -9,27 +9,27 @@ pub struct Pom {
     #[xml(child = "modelVersion")]
     pub model_version: ModelVersion,
     #[xml(child = "parent")]
-    pub parent: Parent,
+    pub parent: Option<Parent>,
     #[xml(child = "groupId")]
-    pub group_id: GroupId,
+    pub group_id: Option<GroupId>,
     #[xml(child = "artifactId")]
     pub artifact_id: ArtifactId,
     #[xml(child = "version")]
-    pub version: Version,
+    pub version: Option<Version>,
     #[xml(child = "name")]
     pub name: Name,
     #[xml(child = "packaging")]
     pub packaging: Option<Packaging>,
     #[xml(child = "url")]
-    pub url: Url,
+    pub url: Option<Url>,
     #[xml(child = "description")]
     pub description: Description,
     #[xml(child = "licenses")]
-    pub licences: Licenses,
+    pub licences: Option<Licenses>,
     #[xml(child = "scm")]
-    pub scm: Scm,
+    pub scm: Option<Scm>,
     #[xml(child = "developers")]
-    pub developers: Developers,
+    pub developers: Option<Developers>,
     #[xml(child = "dependencies")]
     pub dependencies: Option<Dependencies>,
 }

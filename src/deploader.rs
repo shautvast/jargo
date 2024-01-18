@@ -75,6 +75,7 @@ fn load_artifact(project: &Project, artifact: &Artifact) -> Result<(), Error> {
     let pom = Pom::from_str(&pom_lookup.pom_xml).unwrap();
 
     //TODO exclusions
+    //TODO parents
     if let Some(dependencies) = pom.dependencies {
         let artifacts = dependencies.value.into_iter().map(|d| d.into()).collect();
         load_artifacts(project, &artifacts)?;

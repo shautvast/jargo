@@ -11,7 +11,6 @@ anyhow = "1.0"
 strong-xml = "0.6"
 colored = "2.0"
 reqwest = {version = "0.11", features = ["blocking"]}
-tokio = { version = "1", features = ["full"] }
 bytes = "1.5"
 home = "0.5"
 sha1 = "0.10"
