@@ -1,5 +1,5 @@
 use std::fs;
-use std::fs::File;
+use std::fs::{create_dir, create_dir_all, File};
 use std::io::prelude::*;
 use std::io::Write;
 use std::path::Path;
@@ -10,12 +10,12 @@ use sha1::{Digest, Sha1};
 use strong_xml::XmlRead;
 
 use crate::config::config;
-use crate::maven;
 use crate::maven::metadata::Metadata;
 use crate::maven::pom::Pom;
 use crate::project::{Artifact, Project};
 use colored::Colorize;
 use reqwest::StatusCode;
+use crate::maven::pom_view::PomView;
 
 /// Loads a list of artifacts from remote repo or local cache
 ///
@@ -53,7 +53,7 @@ fn load_artifact(project: &Project, artifact: &Artifact) -> Result<(), Error> {
     }
 
     // download remote pom if not in cache
-    let pom_lookup = lookup_verified_pom(project, artifact, &local_artifact_loc)?;
+    let pom_lookup = lookup_verified_pom(project, artifact)?;
 
     // download remote jar if not in cache and check its SHA-1 checksum
     let local_artifact_jar_path = format!(
@@ -73,13 +73,13 @@ fn load_artifact(project: &Project, artifact: &Artifact) -> Result<(), Error> {
     println!("{}", pom_lookup.pom_xml);
     // parse pom file
     let pom = Pom::from_str(&pom_lookup.pom_xml).unwrap();
+    let pom = PomView::new(pom, project)?;
 
     //TODO exclusions
-    //TODO parents
-    if let Some(dependencies) = pom.dependencies {
-        let artifacts = dependencies.value.into_iter().map(|d| d.into()).collect();
-        load_artifacts(project, &artifacts)?;
-    }
+
+    let artifacts = pom.dependencies().into_iter().map(|d| d.into()).collect();
+    load_artifacts(project, &artifacts)?;
+
     Ok(())
 }
 
@@ -93,15 +93,15 @@ fn load_artifact(project: &Project, artifact: &Artifact) -> Result<(), Error> {
 ///
 /// The result from find_pom is passed on to the caller so that the information can be used
 /// for subsequent requests.
-fn lookup_verified_pom(
+pub(crate) fn lookup_verified_pom(
     project: &Project,
     artifact: &Artifact,
-    local_artifact_loc: &str,
 ) -> Result<PomLookupResult, Error> {
     let local_artifact_pom_path = &format!(
-        "{}/{}-{}.pom",
-        local_artifact_loc, artifact.name, artifact.version
+        "{}/{}/{}-{}.pom",
+        config().cache_location, artifact.path, artifact.name, artifact.version
     );
+    // get pom from local or remote
     let result = if exists(local_artifact_pom_path) {
         read_file_to_string(local_artifact_pom_path)?
     } else {
@@ -111,7 +111,7 @@ fn lookup_verified_pom(
         panic!("Could not find pom for {}", artifact.path)
     } else {
         let result = result.unwrap();
-        let repo_with_pom = result.resolved_repo.as_ref(); //TODO replace tuple with struct
+        let repo_with_pom = result.resolved_repo.as_ref();
         let pom_xml = &result.pom_xml;
 
         let local_artifact_pom_sha1_path = format!("{}.sha1", local_artifact_pom_path);
@@ -137,10 +137,10 @@ fn lookup_verified_pom(
 }
 
 #[derive(Debug, Clone)]
-struct PomLookupResult {
-    pom_xml: String,
-    resolved_repo: Option<String>,
-    resolved_version: Option<String>,
+pub(crate) struct PomLookupResult {
+    pub(crate) pom_xml: String,
+    pub(crate) resolved_repo: Option<String>,
+    pub(crate) resolved_version: Option<String>,
 }
 
 fn find_pom(
@@ -169,6 +169,12 @@ fn download_pom(
     local_artifact_pom_path: &str,
     repo: &str,
 ) -> Result<Option<String>, Error> {
+    // can't assume it exists
+    let local_artifact_dir = format!("{}/{}", config().cache_location, artifact.path);
+
+    if !exists(&local_artifact_dir){
+        create_dir_all(local_artifact_dir)?;
+    }
     let remote_artifact_pom_url = format!(
         "{}/{}/{}-{}.pom",
         repo, artifact.path, artifact.name, resolved_version
@@ -269,7 +275,7 @@ fn load_snapshot_build_nr(artifact_path: &str, repo: &String) -> Result<Option<S
                 config().cache_location,
                 artifact_path
             )
-            .as_str(),
+                .as_str(),
             &body,
         )?;
         let metadata = Metadata::from_str(&body)?;

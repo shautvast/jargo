@@ -1,5 +1,4 @@
 use strong_xml::XmlRead;
-use crate::maven::metadata::Versioning;
 
 /// The Maven variant to parse poms
 /// These structs is directly modelled after the XML because that is what strong-xml plugin requires
@@ -7,171 +6,173 @@ use crate::maven::metadata::Versioning;
 #[xml(tag = "project")]
 pub struct Pom {
     #[xml(child = "modelVersion")]
-    pub model_version: ModelVersion,
+    pub(crate) model_version: ModelVersion,
     #[xml(child = "parent")]
-    pub parent: Option<Parent>,
+    pub(crate) parent: Option<Parent>,
     #[xml(child = "groupId")]
-    pub group_id: Option<GroupId>,
+    pub(crate) group_id: Option<GroupId>,
     #[xml(child = "artifactId")]
-    pub artifact_id: ArtifactId,
+    pub(crate) artifact_id: ArtifactId,
     #[xml(child = "version")]
-    pub version: Option<Version>,
+    pub(crate) version: Option<Version>,
     #[xml(child = "name")]
-    pub name: Name,
+    pub(crate) name: Name,
     #[xml(child = "packaging")]
-    pub packaging: Option<Packaging>,
+    pub(crate) packaging: Option<Packaging>,
     #[xml(child = "url")]
-    pub url: Option<Url>,
+    pub(crate) url: Option<Url>,
     #[xml(child = "description")]
-    pub description: Description,
+    pub(crate) description: Description,
     #[xml(child = "licenses")]
-    pub licences: Option<Licenses>,
+    pub(crate) licences: Option<Licenses>,
     #[xml(child = "scm")]
-    pub scm: Option<Scm>,
+    pub(crate) scm: Option<Scm>,
     #[xml(child = "developers")]
-    pub developers: Option<Developers>,
+    pub(crate) developers: Option<Developers>,
     #[xml(child = "dependencies")]
-    pub dependencies: Option<Dependencies>,
+    pub(crate) dependencies: Option<Dependencies>,
+    #[xml(child = "dependencyManagement")]
+    pub(crate) dependency_management: Option<Dependencies>,
 }
 
 #[derive(XmlRead, PartialEq, Debug)]
 #[xml(tag = "modelVersion")]
 pub struct ModelVersion {
     #[xml(text)]
-    value: String,
+    pub value: String,
 }
 
-#[derive(XmlRead, PartialEq, Debug)]
+#[derive(XmlRead, PartialEq, Debug, Clone)]
 #[xml(tag = "groupId")]
 pub struct GroupId {
     #[xml(text)]
-    pub value: String,
+    pub(crate) value: String,
 }
 
-#[derive(XmlRead, PartialEq, Debug)]
+#[derive(XmlRead, PartialEq, Debug, Clone)]
 #[xml(tag = "artifactId")]
 pub struct ArtifactId {
     #[xml(text)]
-    pub value: String,
+    pub(crate) value: String,
 }
 
-#[derive(XmlRead, PartialEq, Debug)]
+#[derive(XmlRead, PartialEq, Debug, Clone)]
 #[xml(tag = "version")]
 pub struct Version {
     #[xml(text)]
-    pub value: String,
+    pub(crate) value: String,
 }
 
 #[derive(XmlRead, PartialEq, Debug)]
 #[xml(tag = "name")]
 pub struct Name {
     #[xml(text)]
-    value: String,
+    pub(crate) value: String,
 }
 
 #[derive(XmlRead, PartialEq, Debug)]
 #[xml(tag = "id")]
 pub struct Id {
     #[xml(text)]
-    value: String,
+    pub(crate) value: String,
 }
 
 #[derive(XmlRead, PartialEq, Debug)]
 #[xml(tag = "packaging")]
 pub struct Packaging {
     #[xml(text)]
-    value: String,
+    pub(crate) value: String,
 }
 
 #[derive(XmlRead, PartialEq, Debug)]
 #[xml(tag = "url")]
 pub struct Url {
     #[xml(text)]
-    value: String,
+    pub(crate) value: String,
 }
 
 #[derive(XmlRead, PartialEq, Debug)]
 #[xml(tag = "description")]
 pub struct Description {
     #[xml(text)]
-    value: String,
+    pub(crate) value: String,
 }
 
 #[derive(XmlRead, PartialEq, Debug)]
 #[xml(tag = "licenses")]
 pub struct Licenses {
     #[xml(child = "license")]
-    licenses: Vec<License>,
+    pub(crate) licenses: Vec<License>,
 }
 
 #[derive(XmlRead, PartialEq, Debug)]
 #[xml(tag = "distribution")]
 pub struct Distribution {
     #[xml(text)]
-    value: String,
+    pub(crate) value: String,
 }
 
 #[derive(XmlRead, PartialEq, Debug)]
 #[xml(tag = "license")]
 pub struct License {
     #[xml(child = "name")]
-    name: Name,
+    pub(crate) name: Name,
     #[xml(child = "url")]
-    url: Url,
+    pub(crate) url: Url,
     #[xml(child = "distribution")]
-    distribution: Option<Distribution>,
+    pub(crate) distribution: Option<Distribution>,
 }
 
 #[derive(XmlRead, PartialEq, Debug)]
 #[xml(tag = "parent")]
 pub struct Parent {
     #[xml(child = "groupId")]
-    group_id: GroupId,
+    pub(crate) group_id: GroupId,
     #[xml(child = "artifactId")]
-    artifact_id: ArtifactId,
+    pub(crate) artifact_id: ArtifactId,
     #[xml(child = "version")]
-    version: Version,
+    pub(crate) version: Version,
 }
 
 #[derive(XmlRead, PartialEq, Debug)]
 #[xml(tag = "scm")]
 pub struct Scm {
     #[xml(child = "url")]
-    url: Url,
+    pub(crate) url: Url,
 }
 
 #[derive(XmlRead, PartialEq, Debug)]
 #[xml(tag = "developers")]
 pub struct Developers {
     #[xml(child = "developer")]
-    developers: Vec<Developer>,
+    pub(crate) developers: Vec<Developer>,
 }
 
 #[derive(XmlRead, PartialEq, Debug)]
 #[xml(tag = "developer")]
 struct Developer {
     #[xml(child = "id")]
-    id: Option<Id>,
+    pub(crate) id: Option<Id>,
     #[xml(child = "name")]
-    name: Name,
+    pub(crate) name: Name,
 }
 
 #[derive(XmlRead, PartialEq, Debug)]
 #[xml(tag = "dependencies")]
 pub struct Dependencies {
     #[xml(child = "dependency")]
-    pub value: Vec<Dependency>,
+    pub(crate) value: Vec<Dependency>,
 }
 
-#[derive(XmlRead, PartialEq, Debug)]
+#[derive(XmlRead, PartialEq, Debug, Clone)]
 #[xml(tag = "dependency")]
 pub struct Dependency {
     #[xml(child = "groupId")]
-    pub group_id: GroupId,
+    pub(crate) group_id: GroupId,
     #[xml(child = "artifactId")]
-    pub artifact_id: ArtifactId,
+    pub(crate) artifact_id: ArtifactId,
     #[xml(child = "version")]
-    pub version: Option<Version>,
+    pub(crate) version: Option<Version>,
 }
 
 #[cfg(test)]

@@ -99,9 +99,7 @@ pub fn load_project(jargo_file: Option<&str>) -> Result<Project, Error> {
 
 fn repositories(table: Option<&Value>) -> Result<Vec<String>, Error> {
     let mut repositories = vec!["https://repo.maven.apache.org/maven2".to_owned()];
-    if let Some(table) = table {
-        let table = table.as_table();
-        if let Some(table) = table {
+        if let Some(Some(table)) = table.map(|t|t.as_table()) {
             for repo in table {
                 let repo_details = repo.1.clone();
                 if let Value::Table(repo_details) = repo_details {
@@ -109,7 +107,6 @@ fn repositories(table: Option<&Value>) -> Result<Vec<String>, Error> {
                         repositories.push(url.into());
                     }
                 }
-            }
         }
     }
     Ok(repositories)
