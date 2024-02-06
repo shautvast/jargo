@@ -1,4 +1,5 @@
 use anyhow::Error;
+use regex::Regex;
 use strong_xml::XmlRead;
 
 use crate::deploader;
@@ -7,7 +8,7 @@ use crate::project::{Artifact, Project};
 
 /// offers a (non-mutable) view on the pom-as-xml-representation
 /// the main use of this is that it resolves the parent information when needed
-pub struct PomView<'a> {
+pub(crate) struct PomView<'a> {
     pom: Pom,
     project: &'a Project,
     parent: Option<Box<PomView<'a>>>,
@@ -86,6 +87,7 @@ impl<'a> PomView<'a> {
                 .dependency_management
                 .as_ref()
                 .map(|d| d.value.clone())
+                .map(|d|d.value)
                 .unwrap_or(vec![]),
         }
     }
@@ -99,6 +101,7 @@ impl<'a> PomView<'a> {
                 } else {
                     if let Some(parent) = &self.parent {
                         search_version(dep, parent.dependency_management())
+                            .map(|v| resolve_props(parent, v))
                     } else {
                         None
                     }
@@ -115,6 +118,20 @@ impl<'a> PomView<'a> {
         }
         resolved_deps
     }
+}
+
+fn resolve_props(pom: &PomView, version: String) -> String {
+    let p = Regex::new("\\$\\{(?<prop>.+?)}").expect("wrong regex"); //TODO instantiate once
+    let v2 = if let Some(capture) = p.captures(&version) {
+        match &capture["prop"] {
+            "project.version" => pom.version(),
+            _ => pom.
+        }
+    } else {
+        version
+    };
+    println!("{}", v2);
+    v2
 }
 
 fn search_version(dep: &Dependency, depman: DependencyManagementView) -> Option<String> {
@@ -150,7 +167,7 @@ pub(crate) struct DependencyView<'a> {
     version: String,
 }
 
-struct DependencyManagementView {
+pub(crate) struct DependencyManagementView {
     dependencies: Vec<Dependency>,
 }
 

@@ -32,7 +32,7 @@ pub struct Pom {
     #[xml(child = "dependencies")]
     pub(crate) dependencies: Option<Dependencies>,
     #[xml(child = "dependencyManagement")]
-    pub(crate) dependency_management: Option<Dependencies>,
+    pub(crate) dependency_management: Option<DependencyManagement>,
 }
 
 #[derive(XmlRead, PartialEq, Debug)]
@@ -157,11 +157,18 @@ struct Developer {
     pub(crate) name: Name,
 }
 
-#[derive(XmlRead, PartialEq, Debug)]
+#[derive(XmlRead, PartialEq, Debug, Clone)]
 #[xml(tag = "dependencies")]
 pub struct Dependencies {
     #[xml(child = "dependency")]
     pub(crate) value: Vec<Dependency>,
+}
+
+#[derive(XmlRead, PartialEq, Debug, Clone)]
+#[xml(tag = "dependencyManagement")]
+pub struct DependencyManagement {
+    #[xml(child = "dependencies")]
+    pub(crate) value: Dependencies,
 }
 
 #[derive(XmlRead, PartialEq, Debug, Clone)]
