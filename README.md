@@ -3,7 +3,7 @@
 ----
 
 **edit:**
-work is stalled, since the xmlparser (hard-xml) does not allow xml entities that are not known upfront, ie the <properties> element has them for every property.
+work is stalled, since the xmlparser (hard-xml) does not allow xml entities that are not known upfront, ie the &lt;properties> element has them for every property.
 I don't even think it should support them and/or the regular java libs like jaxb would do that.
 So ... thinking of forking, but the code is really hard (declarative macro's) and not documented...
 
