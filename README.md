@@ -9,6 +9,7 @@ I don't even think it should support them and/or the regular java libs like jaxb
 So ... thinking of forking, but the code is really hard (declarative macro's) and not documented...
 
 background: we need to parse maven xml to be able to use remote maven repositories.
+
 ----
  
 An experimental build tool for Java taking inspiration from Cargo.
